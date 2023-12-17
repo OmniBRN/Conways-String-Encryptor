@@ -14,6 +14,7 @@
     doi: .long 2
     trei: .long 3
     opt: .long 8
+    zece: .long 10
     viata: .space 4
     nrVecinii: .long 0
     indexCurent: .space 4
@@ -26,14 +27,18 @@
     Vector: .space 10
     sirHexa: .space 22
     parola: .space 10
+    criptata: .space 10
+    dummy: .space 1
     s: .long 0
     nmsIndex: .long 0
     nms2Index: .long 0
     maxx: .long 0xffffffff
+    formatPrintf2: .asciz "%d"
     s0x: .asciz "0x"
     formatScanf: .asciz "%d"
     formatPrintf: .asciz "%d "
     formatScanf2: .asciz "%s"
+    formatPrintf3: .asciz "%s"
     endl: .asciz "\n"
     test: .asciz "test\n"
 .text
@@ -334,7 +339,7 @@ et_criptare:
         movl indexCurent, %ecx
         addl s, %ecx
         cmp %ecx, lungimeParola
-        je et_end
+        je et_criptare_2
         
         movl indexCurent, %ecx
         cmp %ecx, numarElementeMatrice
@@ -351,35 +356,60 @@ et_criptare:
         lea matrix, %edi
         jmp et_criptare_for
 
-    jmp et_end
+    jmp et_criptare_2
+
+
+
+et_criptare_2:
+    movl lungimeParola, %ebx
+    shr $3, %ebx
+    movl %ebx, lungimeParola
+    movl $0, indexCurent
+    xor %ebx, %ebx
+    et_criptare_2_1:
+        movl indexCurent, %ecx
+        cmp %ecx, lungimeParola
+        je et_end
+        lea Vector, %edi
+        movb (%edi, %ecx, 1), %dl
+        lea parola, %edi
+        movb (%edi, %ecx, 1), %bl
+
+        xorb %dl, %bl
+        lea criptata, %edi
+        movb %bl ,(%edi, %ecx, 1)
+
+        incl indexCurent
+        jmp et_criptare_2_1
 
 et_decriptare:
 
-    jmp et_end
 et_end:
-    shr $3, lungimeParola
+
+    lea criptata, %edi
     movl $0, indexCurent
+    xor %ebx, %ebx
     et_for:
         movl indexCurent, %ecx
         cmp %ecx, lungimeParola
         je et_end2
-        lea Vector, %edi
-        movb (%edi, %ecx, 1), %dl
-        movb %dl, s
-        push s
+        movb (%edi, %ecx, 1), %bl
+        
+        push %ebx
         push $formatPrintf
         call printf
-    et_for_cont:
         addl $8, %esp
+
         incl indexCurent
         jmp et_for
+
 
 et_end2:
 
     push $endl
     call printf
     addl $4, %esp
-    
+
     mov $1, %eax
     mov $0, %ebx
     int $0x80
