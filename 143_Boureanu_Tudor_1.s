@@ -29,6 +29,7 @@
     parola: .space 10
     criptata: .space 10
     dummy: .space 1
+    litera: .space 1
     s: .long 0
     nmsIndex: .long 0
     nms2Index: .long 0
@@ -38,7 +39,8 @@
     formatScanf: .asciz "%d"
     formatPrintf: .asciz "%d "
     formatScanf2: .asciz "%s"
-    formatPrintf3: .asciz "%s"
+    formatPrintf3: .asciz "%s\n"
+    hexa: .asciz "0123456789ABCDEF"
     endl: .asciz "\n"
     test: .asciz "test\n"
 .text
@@ -382,29 +384,80 @@ et_criptare_2:
         incl indexCurent
         jmp et_criptare_2_1
 
+
+et_print_litera:
+
+    lea hexa, %edi
+    movb (%edi, %edx, 1), %bl
+    movb %bl, litera
+    push %edx
+    push litera
+    push $formatPrintf3
+    call printf
+    addl $8, %esp
+
+    pushl $0
+    call fflush
+    addl $4, %esp
+
+    pop %edx
+    lea criptata, %edi
+    jmp et_criptare_3_1_cont
+
+et_print_litera_2:
+    lea hexa, %edi
+    movb (%edi, %edx, 1), %bl
+    movb %bl, litera
+    push %edx
+    push litera
+    push $formatPrintf3
+    call printf
+    addl $8, %esp
+
+    pushl $0
+    call fflush
+    addl $4, %esp
+
+    pop %edx
+    lea criptata, %edi
+    jmp et_criptare_3_1_cont_2
+
+et_criptare_3:
+    
+    push $s0x
+    call printf
+    addl $4, %esp
+
+    pushl $0
+    call fflush
+    addl $4, %esp
+    
+    movl $0, indexCurent
+    xor %ebx, %ebx
+    et_criptare_3_1:
+        movl indexCurent, %ecx
+        cmp %ecx, lungimeParola
+        je et_end
+        lea criptata, %edi
+        movb (%edi, %ecx, 1), %dl
+        movb %dl, dummy
+        andb $0x0f, %dl
+        jmp et_print_litera
+
+    et_criptare_3_1_cont:
+
+        movb dummy, %dl
+        andb $0xf0, %dl
+        shr $4, %dl
+        jmp et_print_litera_2
+    et_criptare_3_1_cont_2:
+
+        incl indexCurent
+        jmp et_criptare_3_1
+
 et_decriptare:
 
 et_end:
-
-    lea criptata, %edi
-    movl $0, indexCurent
-    xor %ebx, %ebx
-    et_for:
-        movl indexCurent, %ecx
-        cmp %ecx, lungimeParola
-        je et_end2
-        movb (%edi, %ecx, 1), %bl
-        
-        push %ebx
-        push $formatPrintf
-        call printf
-        addl $8, %esp
-
-        incl indexCurent
-        jmp et_for
-
-
-et_end2:
 
     push $endl
     call printf
