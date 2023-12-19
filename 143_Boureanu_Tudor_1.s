@@ -34,13 +34,13 @@
     nmsIndex: .long 0
     nms2Index: .long 0
     maxx: .long 0xffffffff
+    hexa: .asciz "0123456789ABCDEF"
     formatPrintf2: .asciz "%d"
     s0x: .asciz "0x"
     formatScanf: .asciz "%d"
     formatPrintf: .asciz "%d "
     formatScanf2: .asciz "%s"
-    formatPrintf3: .asciz "%s\n"
-    hexa: .asciz "0123456789ABCDEF"
+    formatPrintf3: .asciz "%s"
     endl: .asciz "\n"
     test: .asciz "test\n"
 .text
@@ -371,7 +371,7 @@ et_criptare_2:
     et_criptare_2_1:
         movl indexCurent, %ecx
         cmp %ecx, lungimeParola
-        je et_end
+        je et_criptare_3
         lea Vector, %edi
         movb (%edi, %ecx, 1), %dl
         lea parola, %edi
@@ -385,42 +385,42 @@ et_criptare_2:
         jmp et_criptare_2_1
 
 
-et_print_litera:
 
+
+et_print_syscall:
+    
     lea hexa, %edi
     movb (%edi, %edx, 1), %bl
     movb %bl, litera
-    push %edx
-    push litera
-    push $formatPrintf3
-    call printf
-    addl $8, %esp
 
-    pushl $0
-    call fflush
-    addl $4, %esp
+    push %edx
+
+    movl $4, %eax
+    movl $1, %ebx
+    movl $litera, %ecx
+    movl $1, %edx
+    int $0x80
 
     pop %edx
-    lea criptata, %edi
     jmp et_criptare_3_1_cont
 
-et_print_litera_2:
+et_print_syscall_2:
+    
     lea hexa, %edi
     movb (%edi, %edx, 1), %bl
     movb %bl, litera
-    push %edx
-    push litera
-    push $formatPrintf3
-    call printf
-    addl $8, %esp
 
-    pushl $0
-    call fflush
-    addl $4, %esp
+    push %edx
+
+    movl $4, %eax
+    movl $1, %ebx
+    movl $litera, %ecx
+    movl $1, %edx
+    int $0x80
 
     pop %edx
-    lea criptata, %edi
     jmp et_criptare_3_1_cont_2
+
 
 et_criptare_3:
     
@@ -441,15 +441,16 @@ et_criptare_3:
         lea criptata, %edi
         movb (%edi, %ecx, 1), %dl
         movb %dl, dummy
-        andb $0x0f, %dl
-        jmp et_print_litera
+        andb $0xf0, %dl
+        shr $4, %dl
+        jmp et_print_syscall
 
     et_criptare_3_1_cont:
 
         movb dummy, %dl
-        andb $0xf0, %dl
-        shr $4, %dl
-        jmp et_print_litera_2
+        andb $0x0f, %dl
+        jmp et_print_syscall_2
+
     et_criptare_3_1_cont_2:
 
         incl indexCurent
@@ -458,6 +459,10 @@ et_criptare_3:
 et_decriptare:
 
 et_end:
+
+    pushl $0
+    call fflush
+    addl $4, %esp
 
     push $endl
     call printf
