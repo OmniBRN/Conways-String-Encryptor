@@ -376,7 +376,7 @@ et_switch:
     movl criptare, %eax
     cmp %eax, unu
     jne et_criptare_2
-    je et_test
+    je et_decriptare_2
 
 
 et_criptare_2:
@@ -539,14 +539,6 @@ et_ifF:
     jmp et_decriptare_for_cont
 
 
-et_youfuckedup:
-    
-    push $youfuckedup
-    call printf
-    addl $4, %esp
-
-    jmp et_end
-
 et_temp:
 
     movl litera, %ebx
@@ -631,7 +623,7 @@ et_decriptare:
     movl $2, indexCurent
     lea sirHexa, %edi
     et_decriptare_for:
-        
+
         movl indexCurent, %ecx
         cmp lungimeSirHexa, %ecx
         je et_matrice2nr
@@ -653,28 +645,42 @@ et_decriptare:
 
 
 
-et_test:
-    movl lungimeParola, %ebx
-    sar $3, %ebx
-    movl %ebx, lungimeParola
+et_decriptare_2:
     movl $0, indexCurent
-    lea Vector, %edi
-    xor %ebx, %ebx
+    movl lungimeParola, %eax
+    sar $3, %eax
+    movl %eax, lungimeParola
+    et_decriptare_2_for:
+        movl indexCurent, %ecx
+        cmp %ecx, lungimeParola
+        je et_test
+        lea criptata, %edi
+        movb (%edi, %ecx, 1), %bl
+        lea Vector, %edi
+        movb (%edi, %ecx, 1), %dl
+        xorb %bl, %dl
+        lea parola, %edi
+        movb %dl, (%edi, %ecx, 1)
+        incl indexCurent
+        jmp et_decriptare_2_for
+    
+et_test:
+    movl $0, indexCurent
+    lea parola, %edi
     et_test_for:
         movl indexCurent, %ecx
         cmp %ecx, lungimeParola
         je et_end
+
         movb (%edi, %ecx, 1), %bl
-        movl %ebx, numar
+        movb %bl, numar
         push numar
         push $formatPrintf
         call printf
         addl $8, %esp
-        xor %ebx, %ebx
+
         incl indexCurent
         jmp et_test_for
-et_decriptare_2:
-
 
 et_end:
 
