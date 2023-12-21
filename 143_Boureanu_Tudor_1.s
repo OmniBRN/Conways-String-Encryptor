@@ -19,21 +19,25 @@
     nrVecinii: .long 0
     indexCurent: .space 4
 
+    semafor: .long 0
     criptare: .space 4
     lungimeParola: .space 4
+    lungimeSirHexa : .space 4
     numarElementeMatrice: .space 4
     matrix: .zero 1600
     matrixNew: .zero 1600
     Vector: .space 10
     sirHexa: .space 22
     parola: .space 10
-    criptata: .space 10
+    criptata: .zero 10
+    numar: .space 4
     dummy: .space 1
     litera: .space 1
     s: .long 0
     nmsIndex: .long 0
     nms2Index: .long 0
     maxx: .long 0xffffffff
+    youfuckedup: .asciz "fuck"
     hexa: .asciz "0123456789ABCDEF"
     formatPrintf2: .asciz "%d"
     s0x: .asciz "0x"
@@ -456,13 +460,203 @@ et_criptare_3:
         incl indexCurent
         jmp et_criptare_3_1
 
+
+et_if0:
+    movl $0, %edx
+    jmp et_decriptare_for_cont
+
+et_if1:
+    movl $1, %edx
+    jmp et_decriptare_for_cont
+
+et_if2:
+    movl $2, %edx
+    jmp et_decriptare_for_cont
+
+et_if3:
+    movl $3, %edx
+    jmp et_decriptare_for_cont
+
+et_if4:
+    movl $4, %edx
+    jmp et_decriptare_for_cont
+
+et_if5:
+    movl $5, %edx
+    jmp et_decriptare_for_cont
+
+et_if6:
+    movl $6, %edx
+    jmp et_decriptare_for_cont
+
+et_if7:
+    movl $7, %edx
+    jmp et_decriptare_for_cont
+
+et_if8:
+    movl $8, %edx
+    jmp et_decriptare_for_cont
+
+et_if9:
+    movl $9, %edx
+    jmp et_decriptare_for_cont
+
+et_ifA:
+    movl $10, %edx
+    jmp et_decriptare_for_cont
+
+et_ifB:
+    movl $11, %edx
+    jmp et_decriptare_for_cont
+
+et_ifC:
+    movl $12, %edx
+    jmp et_decriptare_for_cont
+
+et_ifD:
+    movl $13, %edx
+    jmp et_decriptare_for_cont
+
+et_ifE:
+    movl $14, %edx
+    jmp et_decriptare_for_cont
+
+et_ifF:
+    movl $15, %edx
+    jmp et_decriptare_for_cont
+
+
+et_youfuckedup:
+    
+    push $youfuckedup
+    call printf
+    addl $4, %esp
+
+    jmp et_end
+
+et_temp:
+
+    movl litera, %ebx
+
+    cmp $'0', %ebx
+    je et_if0
+    cmp $'1', %ebx
+    je et_if1
+    cmp $'2', %ebx
+    je et_if2
+    cmp $'3', %ebx
+    je et_if3
+    cmp $'4', %ebx
+    je et_if4
+    cmp $'5', %ebx
+    je et_if5
+    cmp $'6', %ebx
+    je et_if6
+    cmp $'7', %ebx
+    je et_if7
+    cmp $'8', %ebx
+    je et_if8
+    cmp $'9', %ebx
+    je et_if9
+    cmp $'A', %ebx
+    je et_ifA
+    cmp $'B', %ebx
+    je et_ifB
+    cmp $'C', %ebx
+    je et_ifC
+    cmp $'D', %ebx
+    je et_ifD
+    cmp $'E', %ebx
+    je et_ifE
+    cmp $'F', %ebx
+    je et_ifF
+
+et_temp2_0:
+
+
+    movl $1, semafor
+    sal $4, %edx
+    mov %edx, numar
+    jmp et_decriptare_for_cont_2
+
+et_temp2_1:
+
+    addl %edx, numar
+    lea criptata, %edi
+    movl indexCurent, %ecx
+    sar $1, %ecx
+    decl %ecx
+    movl numar, %edx
+    movb %dl, (%edi, %ecx, 1)
+    movl $0, semafor
+    lea sirHexa, %edi
+    jmp et_decriptare_for_cont_2
+
+
+    
+    
 et_decriptare:
+    push $sirHexa
+    push $formatScanf2
+    call scanf 
+    addl $8, %esp
+
+    lea sirHexa, %edi
+    xor %ecx, %ecx
+    xor %eax, %eax
+    mov $0xffff, %cx
+    repne scasb
+    not %cx
+    sub $1, %cx
+    movl %ecx, lungimeSirHexa
+
+    movl lungimeSirHexa, %ebx
+    sar $1, %ebx
+    decl %ebx
+    movl %ebx, lungimeParola
+
+    movl $2, indexCurent
+    lea sirHexa, %edi
+    et_decriptare_for:
+        movl indexCurent, %ecx
+        cmp lungimeSirHexa, %ecx
+        je et_test
+        movb (%edi, %ecx, 1), %bl
+        movl %ebx, litera
+        jmp et_temp
+    et_decriptare_for_cont:
+
+        movl semafor, %ebx
+        cmp $0, %ebx
+
+        je et_temp2_0
+        jne et_temp2_1
+     et_decriptare_for_cont_2:
+
+        incl indexCurent
+        jmp et_decriptare_for
+
+
+et_test:
+    movl $0, indexCurent
+    lea criptata, %edi
+    xor %ebx, %ebx
+    et_test_for:
+        movl indexCurent, %ecx
+        cmp %ecx, lungimeParola
+        je et_end
+        movb (%edi, %ecx, 1), %bl
+        movl %ebx, numar
+        push numar
+        push $formatPrintf
+        call printf
+        addl $8, %esp
+        xor %ebx, %ebx
+        incl indexCurent
+        jmp et_test_for
 
 et_end:
 
-    pushl $0
-    call fflush
-    addl $4, %esp
 
     push $endl
     call printf
