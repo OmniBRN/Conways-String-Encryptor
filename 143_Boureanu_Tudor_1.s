@@ -653,7 +653,7 @@ et_decriptare_2:
     et_decriptare_2_for:
         movl indexCurent, %ecx
         cmp %ecx, lungimeParola
-        je et_test
+        je et_decriptare_3
         lea criptata, %edi
         movb (%edi, %ecx, 1), %bl
         lea Vector, %edi
@@ -664,26 +664,33 @@ et_decriptare_2:
         incl indexCurent
         jmp et_decriptare_2_for
     
-et_test:
+
+et_print_syscall_decript:
+
+    movl $4, %eax
+    movl $1, %ebx
+    movl $numar, %ecx
+    movl $1, %edx
+    int $0x80
+    jmp et_decriptare_3_for_cont
+
+et_decriptare_3:
     movl $0, indexCurent
     lea parola, %edi
-    et_test_for:
+    et_decriptare_3_for:
         movl indexCurent, %ecx
         cmp %ecx, lungimeParola
         je et_end
 
         movb (%edi, %ecx, 1), %bl
-        movb %bl, numar
-        push numar
-        push $formatPrintf
-        call printf
-        addl $8, %esp
-
+        movl %ebx, numar
+        
+        jmp et_print_syscall_decript
+    et_decriptare_3_for_cont:
         incl indexCurent
-        jmp et_test_for
+        jmp et_decriptare_3_for
 
 et_end:
-
 
     push $endl
     call printf
