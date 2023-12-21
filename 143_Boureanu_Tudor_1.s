@@ -276,7 +276,7 @@ et_clean:
     movl %ebx, s
     movl $0, indexCurent
     pop %ebx
-    jmp et_criptare_for_cont
+    jmp et_matrice2nr_for_cont
 
 et_meme:
 
@@ -288,7 +288,7 @@ et_meme:
     movl $0, nmsIndex
     pop %eax
     xor %dl, %dl
-    jmp et_criptare_for_cont_2
+    jmp et_matrice2nr_for_cont_2
 
 et_adauga:
     
@@ -300,7 +300,7 @@ et_adauga:
     cmp %eax, opt
     je et_meme
     shl $1, %dl
-    jmp et_criptare_for_cont_2
+    jmp et_matrice2nr_for_cont_2
 
 
 et_ramane:
@@ -310,7 +310,7 @@ et_ramane:
     cmp %eax, opt
     je et_meme
     shl $1, %dl
-    jmp et_criptare_for_cont_2
+    jmp et_matrice2nr_for_cont_2
 
 et_criptare:
 
@@ -328,10 +328,16 @@ et_criptare:
     not %cx
     sub $1, %cx
     mov %cx, lungimeParola
+    
+    
+    jmp et_matrice2nr
+
+et_matrice2nr:
+
     movl lungimeParola, %eax
     mull opt
     movl %eax, lungimeParola
-    
+
     movl m, %eax
     mull n
     movl %eax, numarElementeMatrice
@@ -340,30 +346,37 @@ et_criptare:
     movl $0, indexCurent
     xor %edx, %edx
 
-    et_criptare_for:
+    et_matrice2nr_for:
 
         movl indexCurent, %ecx
         addl s, %ecx
         cmp %ecx, lungimeParola
-        je et_criptare_2
+        je et_switch
         
         movl indexCurent, %ecx
         cmp %ecx, numarElementeMatrice
         je et_clean
-    et_criptare_for_cont:
+    et_matrice2nr_for_cont:
         movl (%edi, %ecx, 4), %ebx
         addl maxx, %ebx
 
         jc et_adauga
         jnc et_ramane
     
-    et_criptare_for_cont_2:
+    et_matrice2nr_for_cont_2:
+
         incl indexCurent
         lea matrix, %edi
-        jmp et_criptare_for
+        jmp et_matrice2nr_for
 
-    jmp et_criptare_2
+    jmp et_matrice2nr_for
 
+
+et_switch:
+    movl criptare, %eax
+    cmp %eax, unu
+    jne et_criptare_2
+    je et_test
 
 
 et_criptare_2:
@@ -618,12 +631,14 @@ et_decriptare:
     movl $2, indexCurent
     lea sirHexa, %edi
     et_decriptare_for:
+        
         movl indexCurent, %ecx
         cmp lungimeSirHexa, %ecx
-        je et_test
+        je et_matrice2nr
         movb (%edi, %ecx, 1), %bl
         movl %ebx, litera
         jmp et_temp
+
     et_decriptare_for_cont:
 
         movl semafor, %ebx
@@ -637,9 +652,13 @@ et_decriptare:
         jmp et_decriptare_for
 
 
+
 et_test:
+    movl lungimeParola, %ebx
+    sar $3, %ebx
+    movl %ebx, lungimeParola
     movl $0, indexCurent
-    lea criptata, %edi
+    lea Vector, %edi
     xor %ebx, %ebx
     et_test_for:
         movl indexCurent, %ecx
@@ -654,6 +673,8 @@ et_test:
         xor %ebx, %ebx
         incl indexCurent
         jmp et_test_for
+et_decriptare_2:
+
 
 et_end:
 
