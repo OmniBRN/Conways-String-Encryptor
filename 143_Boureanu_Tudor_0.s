@@ -267,6 +267,11 @@ et_forcont:
     jmp et_for
 
 et_end:
+
+    pushl $0
+    call fflush
+    popl %ebx
+
     mov $1, %eax
     mov $0, %ebx
     int $0x80
