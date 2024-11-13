@@ -1,4 +1,4 @@
-# String encryptor using Conway's Game of Life written in AT&T x86 Assembly
+# String Encryptor using Conway's Game of Life written in AT&T x86 Assembly
 https://cs.unibuc.ro/~crusu/asc/Arhitectura%20Sistemelor%20de%20Calcul%20(ASC)%20-%20Tema%20Laborator%202023.pdf#section.2
 
 
