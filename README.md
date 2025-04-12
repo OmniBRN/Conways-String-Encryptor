@@ -14,4 +14,4 @@ https://cs.unibuc.ro/~crusu/asc/Arhitectura%20Sistemelor%20de%20Calcul%20(ASC)%2
 
 ## Motivation
 
-This was a college project for the Computer Arhitecure course I took in college.
+This was a college project for the Computer Architecure course I took in college.
